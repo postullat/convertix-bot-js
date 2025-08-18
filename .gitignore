@@ -39,6 +39,7 @@ Thumbs.db
 
 # Puppeteer/Chromium caches (when configured outside node_modules)
 .puppeteer/
+.puppeteer-profile/
 .pptr/
 .chromium/
 
