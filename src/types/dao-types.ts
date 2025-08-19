@@ -59,6 +59,22 @@ interface JobStreamWithDocId extends JobStream {
     docId: string; // Firestore document ID
 }
 
+interface Portfolio {
+    id: number;
+    technologies: string[];
+    metaTitle: string;
+    firebaseId: string;
+    title: string;
+    url: string;
+    description: string;
+    assignedJobStreams: string[];
+}
+
+// Portfolio with document ID
+interface PortfolioWithDocId extends Portfolio {
+    docId: string;
+}
+
 export type {
     FirebaseTimestamp,
     ProposalPrompt,
@@ -66,5 +82,7 @@ export type {
     CustomQuestion,
     SearchParams,
     JobStream,
-    JobStreamWithDocId
+    JobStreamWithDocId,
+    Portfolio,
+    PortfolioWithDocId
 };
