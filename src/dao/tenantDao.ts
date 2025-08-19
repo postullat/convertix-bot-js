@@ -1,5 +1,12 @@
 import {dbAdmin} from "../config/firebase";
-import {JobStream, JobStreamWithDocId, Portfolio, PortfolioWithDocId} from "../types/dao-types";
+import {
+    JobStream,
+    JobStreamWithDocId,
+    Portfolio,
+    PortfolioWithDocId,
+    Question,
+    QuestionWithDocId
+} from "../types/dao-types";
 
 export const getActiveJobStream = async (tenantId: string): Promise<JobStream[] | null> => {
     try {
@@ -77,5 +84,50 @@ export const fetchPortfolioByIds = async (
     }
 };
 
-//getActiveJobStream("company1");
-fetchPortfolioByIds("company1", ["FX4o4MFEduAAuSKjiZ8C", "HxvZpikUa2ravFMVKth8"]);
+export const fetchQuestionsByIds = async (
+    tenantId: string,
+    questionIds: string[]
+): Promise<QuestionWithDocId[] | null> => {
+    try {
+        if (!questionIds || questionIds.length === 0) {
+            console.log("No question IDs provided");
+            return [];
+        }
+
+        console.log(`Fetching ${questionIds.length} questions for tenant: ${tenantId}`);
+
+        const batchSize = 10;
+        const questions: QuestionWithDocId[] = [];
+
+        for (let i = 0; i < questionIds.length; i += batchSize) {
+            const batch = questionIds.slice(i, i + batchSize);
+
+            const collectionRef = dbAdmin
+                .collection("tenants")
+                .doc(tenantId)
+                .collection("questions")
+                .where("__name__", "in", batch); // __name__ refers to document ID
+
+            const querySnapshot = await collectionRef.get();
+
+            querySnapshot.docs.forEach(doc => {
+                questions.push({
+                    docId: doc.id,
+                    ...doc.data() as Question
+                });
+            });
+        }
+
+        console.log(`Questions: ${JSON.stringify(questions)}`);
+        console.log(`Found ${questions.length} questions out of ${questionIds.length} requested`);
+        return questions;
+
+    } catch (error) {
+        console.error("Error fetching questions:", error);
+        return null;
+    }
+};
+
+getActiveJobStream("company1");
+//fetchPortfolioByIds("company1", ["FX4o4MFEduAAuSKjiZ8C", "HxvZpikUa2ravFMVKth8"]);
+//fetchQuestionsByIds("company1", ["v73iWD0UZTx53PDl29tB", "nfow2zpxcELsotP0Vgy2", "4c570aed-770d-49b1-adb9-edde7810876f"]);

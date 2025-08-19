@@ -75,6 +75,17 @@ interface PortfolioWithDocId extends Portfolio {
     docId: string;
 }
 
+interface Question {
+    question: string;
+    answer: string;
+    id: string;
+    predefined: boolean;
+}
+
+interface QuestionWithDocId extends Question {
+    docId: string;
+}
+
 export type {
     FirebaseTimestamp,
     ProposalPrompt,
@@ -84,5 +95,7 @@ export type {
     JobStream,
     JobStreamWithDocId,
     Portfolio,
-    PortfolioWithDocId
+    PortfolioWithDocId,
+    Question,
+    QuestionWithDocId
 };
