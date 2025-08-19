@@ -1,5 +1,6 @@
 import {dbAdmin} from "../config/firebase";
 import {
+    JobStats, JobStatsWithDocId,
     JobStream,
     JobStreamWithDocId,
     Portfolio,
@@ -128,6 +129,48 @@ export const fetchQuestionsByIds = async (
     }
 };
 
-getActiveJobStream("company1");
+
+export const fetchRecentJobsStats = async (
+    tenantId: string,
+    limitCount: number = 30
+): Promise<JobStatsWithDocId[] | null> => {
+    try {
+        console.log(`Fetching jobs from last 15 minutes for tenant: ${tenantId}`);
+
+        // Calculate the timestamp for 15 minutes ago
+        const fifteenMinutesAgo = new Date();
+        fifteenMinutesAgo.setMinutes(fifteenMinutesAgo.getMinutes() - 15);
+
+        const collectionRef = dbAdmin
+            .collection("tenants")
+            .doc(tenantId)
+            .collection("job-stats")
+            .where("jobPostedDate", ">=", fifteenMinutesAgo)
+            .orderBy("jobPostedDate", "desc") // Order by most recent first
+            .limit(limitCount); // Configurable limit to prevent excessive data reads
+
+        const querySnapshot = await collectionRef.get();
+
+        const jobs: JobStatsWithDocId[] = [];
+        querySnapshot.docs.forEach(doc => {
+            jobs.push({
+                docId: doc.id,
+                ...doc.data() as JobStats
+            });
+        });
+
+        console.log(`Jobs: ${JSON.stringify(jobs)}`);
+        console.log(`Found ${jobs.length} jobs posted in the last 15 minutes`);
+        return jobs;
+
+    } catch (error) {
+        console.error("Error fetching recent jobs:", error);
+        return null;
+    }
+};
+
+
+fetchRecentJobsStats("company1")
+//getActiveJobStream("company1");
 //fetchPortfolioByIds("company1", ["FX4o4MFEduAAuSKjiZ8C", "HxvZpikUa2ravFMVKth8"]);
 //fetchQuestionsByIds("company1", ["v73iWD0UZTx53PDl29tB", "nfow2zpxcELsotP0Vgy2", "4c570aed-770d-49b1-adb9-edde7810876f"]);

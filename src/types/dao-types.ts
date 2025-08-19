@@ -1,3 +1,6 @@
+import {firestore} from "firebase-admin";
+import Timestamp = firestore.Timestamp;
+
 interface FirebaseTimestamp {
     _seconds: number;
     _nanoseconds: number;
@@ -86,6 +89,30 @@ interface QuestionWithDocId extends Question {
     docId: string;
 }
 
+interface JobStats {
+    businessManager: string;
+    closedDate: FirebaseTimestamp;
+    connectsSpent: number;
+    createdAt: FirebaseTimestamp;
+    declinedDate: string;
+    freelancer: string;
+    hiredDate: FirebaseTimestamp;
+    id: number;
+    jobStreamId: number;
+    promptId: number;
+    proposalSentDate: FirebaseTimestamp;
+    proposalUrl: string;
+    proposalViewedDate: FirebaseTimestamp;
+    repliedDate: FirebaseTimestamp;
+    title: string;
+    updatedAt: FirebaseTimestamp;
+    jobPostedDate: FirebaseTimestamp;
+}
+
+interface JobStatsWithDocId extends JobStats {
+    docId: string;
+}
+
 export type {
     FirebaseTimestamp,
     ProposalPrompt,
@@ -97,5 +124,7 @@ export type {
     Portfolio,
     PortfolioWithDocId,
     Question,
-    QuestionWithDocId
+    QuestionWithDocId,
+    JobStats,
+    JobStatsWithDocId
 };
