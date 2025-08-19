@@ -1,0 +1,30 @@
+import admin from "firebase-admin";
+import {ServiceAccount} from "firebase-admin";
+
+const serviceAccount: ServiceAccount = {
+    projectId: "convertix-dfc7f",
+    privateKey: "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCHvGK7LSXcz5Vn\nPvPxpGwdZ4/QM7YYF2HukYxz7lYEwamRVWuYXlG5FRLX4ayqYP4qYV0obL+eSYUM\nKdNSbiSNlJBS/aAySz9u9TVpWHq/QVJn1O2oNWEm80OZx+mbD3fmnxu0IV9dso0t\nZYoJjwD/qQAIt4wKslF1qlWKV3lkASHUonouYThMFMEnml69cm1XB+g2viVOfQ+E\nNsbA1rCk4yA8DsSV73jQBnq8iTLkiDkpFMH3PaILLxw+hivdBPcSI+mdCUOIoS85\nc/Cqo+4G5bFzYtKyxq+vUTZA56HX4Uc9w8U0s3Oh5YKKcjX5Jkm15mVybrmZ6pQU\n1tnw7K1XAgMBAAECggEALzv5R5WAdYSvQwx/K3nCPcFKJHO6TEvmwnRX4gfwWxth\nfLezB4Ta/4M72XAo++lgyTK0jlq5m8WNzRvI9AhsI/CtAJRN6PKSknQ2MACgRmne\n2U8ZnM1mj31b6unMey841EJOC7MJUrvNsRyCmqzu9gjDgEUPMLG48y9hMREbpxbT\n+f21F011NgQ9VExR2KG1tkiBPwbn5yhoF1oswDsjuY6uqcWRr7n94u9GFbexmx+N\njFTApSzjbrVbPqHeY/xCNjEyWPoocQj4yTC83S8h5DvO2lMO3D24WhgQPbkfb0pb\n1rbQtspIL5kxNxNo9jlh+jc1Uf4AG+MaM/1c20zUIQKBgQC/7ZO3P72o3FHcaAB/\n8B5x3r6gr+0Ma6uv4UBluGE6WzjmzTbcjveJqRsAcjh+MEDjiiKIU4Xk3kFSeWvz\nDIDGLQEs/lJTw8ENfxBG1m5coojdeFr1PbNlcOgT/zwgQwDRz4xaRdK3O3czca4y\n5cw0h1T0JCBVb0Kc1j+K3wmk6QKBgQC1DI2X1r7mH3DHJyr8rDJNl8gPpzuz8vTD\nebfmHQwDiWtFe9EnqLndF3YHcjv4LjFe3yaF8twrOydIouXyQUyOnqYKyiwtoOT1\n50XN0UpvQJpOmi5xl4HrCNE7VfjbT3xF6e6vdKXLCfzhmpxdTqOa4KcLgMguwj+6\ndZ8W79VYPwKBgGEYjOlg+s8pntRVXSNcU9qhqGjcd50X/4R7/Ts4ux9ttOy2lvGf\n9kUTYxCnuELGoJ08bdnv/0XY1s0llmIgSil37SdZBkdQOiNcy9w6cRy2MW1xjPqS\nm2ZPZ2lub3mWzBxY1pV4y3BdSiGhelJPhS5x5J2ahS0Tm2yCyySzT0q5AoGAGsWX\nbnt/0RGXIKvnDGP+MEEggUgOaQalMP6ftfRXoXJBnY24mO+3RD1C48j9my5heJDw\n5l/KNM5Tecc0z4TeaDyHexL4Q2sGUGJ5jPzEz/yylKrx8TQhLvsnzWliGjP/wWrd\nM67BEWwRq96r/pQxVyafLPFHKLrqp4zbEI44cwsCgYBW5wSiqSyZcRZmgPfUH/+U\nE4zmOQntes9SmNzEFVC0Kpp7dPfT2/Is/3envvdWR4YPqnH1KdNZu9B743P0RJJQ\nPDB3nVltPyy/2Gg7HN+EM3/VRf4tBgWYHqoCyrXgszhx+NY87YkUZ4d1d3VjRMqD\n2TWQJKqITl6WILWXlNkBEA==\n-----END PRIVATE KEY-----\n",
+    clientEmail: "firebase-adminsdk-8p36p@convertix-dfc7f.iam.gserviceaccount.com",
+}
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+});
+
+const dbAdmin = admin.firestore();
+
+const test = async () => {
+    console.log("Dou config fetch started");
+    const docRef = dbAdmin.collection("tenants").doc("company1").collection("job-streams").doc("3cS1SJmCxnsKnnj9MxxT");
+    const docSnap = await docRef.get();
+
+    if (docSnap.exists) {
+        const data = docSnap.data();
+        console.log("Job stream:", JSON.stringify(data));
+    } else {
+        console.log("No such job stream document!");
+        return null;
+    }
+}
+
+test();

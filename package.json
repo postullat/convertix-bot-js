@@ -6,7 +6,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "puppeteer": "node puppeteer-version.js"
+    "puppeteer": "node puppeteer-version.js",
+    "dev": "ts-node src/firebase.ts",
+    "build": "tsc",
+    "firebase": "tsx src/config/firebase.ts"
   },
   "keywords": [],
   "author": "",
@@ -15,10 +18,16 @@
     "axios": "^1.11.0",
     "axios-cookiejar-support": "^6.0.4",
     "dotenv": "^16.4.5",
+    "firebase-admin": "^13.4.0",
     "puppeteer": "^24.16.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "tough-cookie": "^5.1.2",
     "undici": "^7.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "tsx": "^4.20.4",
+    "typescript": "^5.9.2"
   }
 }
