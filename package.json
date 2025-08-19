@@ -1,11 +1,12 @@
 {
-  "name": "upwork-job-fetcher",
+  "name": "convertix-bot-js",
   "version": "1.0.0",
   "type": "module",
-  "description": "Fetch jobs from Upwork API and store them in MongoDB",
+  "description": "Convertix bot js",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "puppeteer": "node puppeteer-version.js"
   },
   "keywords": [],
   "author": "",
@@ -13,11 +14,10 @@
   "dependencies": {
     "axios": "^1.11.0",
     "axios-cookiejar-support": "^6.0.4",
-    "https": "^1.0.0",
-    "jsdom": "^26.1.0",
-    "node-fetch": "^3.3.2",
-    "node-tls-client": "^2.1.0",
+    "dotenv": "^16.4.5",
     "puppeteer": "^24.16.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "tough-cookie": "^5.1.2",
     "undici": "^7.13.0"
   }
