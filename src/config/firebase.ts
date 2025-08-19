@@ -11,20 +11,5 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
 });
 
-const dbAdmin = admin.firestore();
+export const dbAdmin = admin.firestore();
 
-const test = async () => {
-    console.log("Dou config fetch started");
-    const docRef = dbAdmin.collection("tenants").doc("company1").collection("job-streams").doc("3cS1SJmCxnsKnnj9MxxT");
-    const docSnap = await docRef.get();
-
-    if (docSnap.exists) {
-        const data = docSnap.data();
-        console.log("Job stream:", JSON.stringify(data));
-    } else {
-        console.log("No such job stream document!");
-        return null;
-    }
-}
-
-test();
