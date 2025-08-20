@@ -2,7 +2,7 @@ import {dbAdmin} from "../config/firebase";
 import {
     JobStats, JobStatsWithDocId,
     JobStream,
-    JobStreamWithDocId,
+    JobStreamWithDocId, MinimalJobStats, MinimalJobStatsWithDocId,
     Portfolio,
     PortfolioWithDocId,
     Question,
@@ -130,14 +130,15 @@ export const fetchQuestionsByIds = async (
 };
 
 
+
+
 export const fetchRecentJobsStats = async (
     tenantId: string,
     limitCount: number = 30
-): Promise<JobStatsWithDocId[] | null> => {
+): Promise<Record<number, MinimalJobStatsWithDocId[]> | null> => {
     try {
-        console.log(`Fetching jobs from last 15 minutes for tenant: ${tenantId}`);
+        console.log(`Fetching jobs (only id, jobStreamId, jobId, proposalId) from last 15 minutes for tenant: ${tenantId}`);
 
-        // Calculate the timestamp for 15 minutes ago
         const fifteenMinutesAgo = new Date();
         fifteenMinutesAgo.setMinutes(fifteenMinutesAgo.getMinutes() - 15);
 
@@ -146,28 +147,37 @@ export const fetchRecentJobsStats = async (
             .doc(tenantId)
             .collection("job-stats")
             .where("jobPostedDate", ">=", fifteenMinutesAgo)
-            .orderBy("jobPostedDate", "desc") // Order by most recent first
-            .limit(limitCount); // Configurable limit to prevent excessive data reads
+            .orderBy("jobPostedDate", "desc")
+            .limit(limitCount)
+            .select("id", "jobId", "proposalId", "jobStreamId");
 
         const querySnapshot = await collectionRef.get();
 
-        const jobs: JobStatsWithDocId[] = [];
-        querySnapshot.docs.forEach(doc => {
-            jobs.push({
-                docId: doc.id,
-                ...doc.data() as JobStats
-            });
-        });
+        const jobs: MinimalJobStatsWithDocId[] = querySnapshot.docs.map(doc => ({
+            docId: doc.id,
+            ...(doc.data() as MinimalJobStats),
+        }));
 
-        console.log(`Jobs: ${JSON.stringify(jobs)}`);
+        // групуємо по jobStreamId
+        const grouped = jobs.reduce<Record<number, MinimalJobStatsWithDocId[]>>((acc, job) => {
+            if (!acc[job.jobStreamId]) {
+                acc[job.jobStreamId] = [];
+            }
+            acc[job.jobStreamId].push(job);
+            return acc;
+        }, {});
+
+        console.log(`Grouped Jobs: ${JSON.stringify(grouped)}`);
         console.log(`Found ${jobs.length} jobs posted in the last 15 minutes`);
-        return jobs;
 
+        return grouped;
     } catch (error) {
         console.error("Error fetching recent jobs:", error);
         return null;
     }
 };
+
+
 
 
 fetchRecentJobsStats("company1")

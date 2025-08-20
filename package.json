@@ -9,7 +9,8 @@
     "puppeteer": "node puppeteer-version.js",
     "dev": "ts-node src/firebase.ts",
     "build": "tsc",
-    "dao": "tsx src/dao/tenantDao.ts"
+    "dao": "tsx src/dao/tenantDao.ts",
+    "main": "tsx app.ts"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,8 @@
     "axios-cookiejar-support": "^6.0.4",
     "dotenv": "^16.4.5",
     "firebase-admin": "^13.4.0",
+    "graphql": "^16.11.0",
+    "graphql-request": "^7.2.0",
     "puppeteer": "^24.16.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",

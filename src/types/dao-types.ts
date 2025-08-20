@@ -100,6 +100,8 @@ interface JobStats {
     id: number;
     jobStreamId: number;
     promptId: number;
+    jobId: string;
+    proposalId: string;
     proposalSentDate: FirebaseTimestamp;
     proposalUrl: string;
     proposalViewedDate: FirebaseTimestamp;
@@ -111,6 +113,14 @@ interface JobStats {
 
 interface JobStatsWithDocId extends JobStats {
     docId: string;
+}
+
+type MinimalJobStats = Pick<JobStats, "id" | "jobStreamId" | "jobId" | "proposalId">;
+type MinimalJobStatsWithDocId = MinimalJobStats & { docId: string };
+
+interface Config {
+    activeJobStreams: JobStream[] | null;
+    recentJobsStats: Record<number, MinimalJobStatsWithDocId[]> | null;
 }
 
 export type {
@@ -126,5 +136,8 @@ export type {
     Question,
     QuestionWithDocId,
     JobStats,
-    JobStatsWithDocId
+    JobStatsWithDocId,
+    MinimalJobStats,
+    MinimalJobStatsWithDocId,
+    Config
 };
