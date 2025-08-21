@@ -1,5 +1,4 @@
 import 'dotenv/config'
-import path from 'path'
 import { chromium } from 'playwright-extra'
 
 const USE_PROXY = process.env.USE_PROXY === 'true' || process.env.USE_PROXY === '1'
@@ -7,9 +6,9 @@ const proxyHost = process.env.PROXY_HOST || 'res.proxy-seller.com'
 const proxyPort = process.env.PROXY_PORT || '10001'
 const proxyUser = process.env.PROXY_USER || 'b02fa50863fc96e6'
 const proxyPass = process.env.PROXY_PASS || 'b8tRlFYa'
-const USER_DATA_DIR = process.env.PW_USER_DATA_DIR || path.resolve('./.playwright-profile')
 
 async function run() {
+  let browser
   let context
   try {
     const launchOptions = {
@@ -22,6 +21,11 @@ async function run() {
         '--no-zygote',
         '--disable-web-security',
       ],
+    }
+
+    browser = await chromium.launch(launchOptions)
+    
+    const contextOptions = {
       ...(USE_PROXY && {
         proxy: {
           server: `http://${proxyHost}:${proxyPort}`,
@@ -31,10 +35,8 @@ async function run() {
       }),
     }
 
-    context = await chromium.launchPersistentContext(USER_DATA_DIR, {...launchOptions,})
-    const pages = context.pages()
-    const page = pages[0] || (await context.newPage())
-    try { await page.bringToFront() } catch {}
+    context = await browser.newContext(contextOptions)
+    const page = await context.newPage()
 
     await context.setExtraHTTPHeaders({
       'Accept-Language': 'en-US,en;q=0.9',
@@ -60,8 +62,8 @@ async function run() {
       console.log('⚠️ Failed to set master_access_token cookie:', e?.message)
     }
 
-
-    await page.goto('https://www.upwork.com/ab/account-security/login', { waitUntil: 'commit', timeout: 15000 })
+    await page.goto('https://www.upwork.com/ab/account-security/login')
+    await page.waitForTimeout(5000)
     // After page open (openLoginPage waits ~3s), dump HttpOnly cookies
     try {
       const allCookies = await context.cookies()
@@ -86,7 +88,10 @@ async function run() {
   } catch (err) {
     console.error('❌ Playwright flow failed:', err?.message)
     throw err
-  } 
+  } finally {
+    if (context) await context.close()
+    if (browser) await browser.close()
+  }
 }
 
 run().catch((e) => {
