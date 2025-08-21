@@ -1,13 +1,14 @@
 import 'dotenv/config'
 import { chromium } from 'playwright-extra'
 
-const USE_PROXY = process.env.USE_PROXY === 'true' || process.env.USE_PROXY === '1'
-const proxyHost = process.env.PROXY_HOST || 'res.proxy-seller.com'
-const proxyPort = process.env.PROXY_PORT || '10001'
-const proxyUser = process.env.PROXY_USER || 'b02fa50863fc96e6'
-const proxyPass = process.env.PROXY_PASS || 'b8tRlFYa'
+const USE_PROXY = true
+const proxyHost = 'res.proxy-seller.com'
+const proxyPort = '10001'
+const proxyUser = 'b02fa50863fc96e6'
+const proxyPass = 'b8tRlFYa'
+const masterToken = '22942ae7.oauth2v2_8715271296a46676020f5b37b379ea9d'
 
-async function run() {
+async function getOAuth2v2Cookies() {
   let browser
   let context
   try {
@@ -47,7 +48,6 @@ async function run() {
 
     // Pre-seed Upwork master token cookie
     try {
-      const masterToken = '22942ae7.oauth2v2_8715271296a46676020f5b37b379ea9d'
       if (masterToken) {
         const expires = Math.floor(Date.now() / 1000) + 7 * 24 * 3600
         await context.addCookies([{
@@ -63,15 +63,19 @@ async function run() {
     }
 
     await page.goto('https://www.upwork.com/ab/account-security/login')
-    await page.waitForTimeout(5000)
-    // After page open (openLoginPage waits ~3s), dump HttpOnly cookies
+    await page.waitForTimeout(3000)
+    
+    // Get all cookies and filter those with oauth2v2 values
     try {
       const allCookies = await context.cookies()
-      const httpOnlyCookies = Array.isArray(allCookies) ? allCookies.filter(c => c && c.httpOnly) : []
-      console.log('🍪 HttpOnly cookies count:', httpOnlyCookies.length)
-      httpOnlyCookies.forEach(c => {
+      const oauth2v2Cookies = Array.isArray(allCookies) 
+        ? allCookies.filter(c => c && c.value && c.value.startsWith('oauth2v2'))
+        : []
+      
+      console.log('🍪 OAuth2v2 cookies count:', oauth2v2Cookies.length)
+      oauth2v2Cookies.forEach(c => {
         try {
-          console.log('🍪 HttpOnly cookie:', {
+          console.log('🍪 OAuth2v2 cookie:', {
             name: c.name,
             value: c.value,
             domain: c.domain,
@@ -82,8 +86,11 @@ async function run() {
           })
         } catch {}
       })
+      
+      return oauth2v2Cookies
     } catch (e) {
-      console.log('🍪 Failed to read HttpOnly cookies:', e?.message)
+      console.log('🍪 Failed to read cookies:', e?.message)
+      return []
     }
   } catch (err) {
     console.error('❌ Playwright flow failed:', err?.message)
@@ -94,6 +101,12 @@ async function run() {
   }
 }
 
-run().catch((e) => {
-  console.error('💥 Script failed:', e?.stack || e)
-})
+// Export the function
+export { getOAuth2v2Cookies }
+
+// Run if this file is executed directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  getOAuth2v2Cookies().catch((e) => {
+    console.error('💥 Script failed:', e?.stack || e)
+  })
+}
