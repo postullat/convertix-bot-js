@@ -30,7 +30,7 @@ export const getActiveJobStream = async (tenantId: string): Promise<JobStream[] 
             ...doc.data() as JobStream
         }));
 
-        console.log(`Job streams: ${JSON.stringify(jobStreams)}`);
+        console.log(`Job streams: ${jobStreams}`);
         console.log(`Found ${jobStreams.length} active job streams:`);
         return jobStreams;
     } catch (error) {
@@ -75,7 +75,7 @@ export const fetchPortfolioByIds = async (
             });
         }
 
-        console.log(`Portfolio: ${JSON.stringify(portfolioItems)}`);
+        console.log(`Portfolio: ${portfolioItems}`);
         console.log(`Found ${portfolioItems.length} portfolio items out of ${portfolioIds.length} requested`);
         return portfolioItems;
 
@@ -119,7 +119,7 @@ export const fetchQuestionsByIds = async (
             });
         }
 
-        console.log(`Questions: ${JSON.stringify(questions)}`);
+        console.log(`Questions: ${questions}`);
         console.log(`Found ${questions.length} questions out of ${questionIds.length} requested`);
         return questions;
 
@@ -167,7 +167,7 @@ export const fetchRecentJobsStats = async (
             return acc;
         }, {});
 
-        console.log(`Grouped Jobs: ${JSON.stringify(grouped)}`);
+        console.log(`Grouped Jobs: ${grouped}`);
         console.log(`Found ${jobs.length} jobs posted in the last 15 minutes`);
 
         return grouped;
@@ -180,7 +180,7 @@ export const fetchRecentJobsStats = async (
 
 
 
-fetchRecentJobsStats("company1")
+//fetchRecentJobsStats("company1")
 //getActiveJobStream("company1");
 //fetchPortfolioByIds("company1", ["FX4o4MFEduAAuSKjiZ8C", "HxvZpikUa2ravFMVKth8"]);
 //fetchQuestionsByIds("company1", ["v73iWD0UZTx53PDl29tB", "nfow2zpxcELsotP0Vgy2", "4c570aed-770d-49b1-adb9-edde7810876f"]);

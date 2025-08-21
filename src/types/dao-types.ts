@@ -123,6 +123,76 @@ interface Config {
     recentJobsStats: Record<number, MinimalJobStatsWithDocId[]> | null;
 }
 
+interface Location {
+    city: string;
+    country: string;
+    countryTimezone: string;
+}
+
+// Client stats interface
+interface ClientStats {
+    avgHireRate: number | null;
+    avgHourlyJobsRate: number | null;
+    companySize: number;
+    hoursCount: number | null;
+    industry: string;
+    totalFeedback: number;
+    totalHiredJobs: number | null;
+    totalPostedJobs: number | null;
+    totalReviews: number;
+    totalSpent: number;
+    verificationStatus: boolean;
+}
+
+// Client interface
+interface Client {
+    location: Location;
+    stats: ClientStats;
+}
+
+// Main job interface
+interface UpworkJob {
+    id: string;
+    connectPrice: number;
+    contractorTier: "EntryLevel" | "Intermediate" | "Expert";
+    createdAt: string;
+    createdDateTime: string;
+    description: string;
+    enterpriseJob: boolean;
+    fixedPriceAmount: number | null;
+    fixedPriceEngagementDuration: string | null;
+    hourlyBudgetMax: number | null;
+    hourlyBudgetMin: number | null;
+    hourlyEngagementDuration: string | null;
+    hourlyEngagementType: string | null;
+    jobType: "FIXED" | "HOURLY";
+    personsToHire: number;
+    premium: boolean;
+    publishedDateTime: string;
+    skills: string[];
+    status: "COMPLETED" | "ACTIVE" | "CLOSED";
+    title: string;
+    totalApplicants: number | null;
+    updatedAt: string;
+    client: Client;
+    questions: string[];
+    category: string;
+    subcategory: string;
+}
+
+// Response wrapper interface
+interface JobsResponse {
+    data: UpworkJob[];
+    total: number;
+    page: number;
+    limit: number;
+}
+
+// Root interface
+interface UpworkApiResponse {
+    jobs: JobsResponse;
+}
+
 export type {
     FirebaseTimestamp,
     ProposalPrompt,
@@ -139,5 +209,12 @@ export type {
     JobStatsWithDocId,
     MinimalJobStats,
     MinimalJobStatsWithDocId,
-    Config
+    Config,
+    Location,
+    ClientStats,
+    Client,
+    UpworkJob,
+    JobsResponse,
+    UpworkApiResponse
+
 };
