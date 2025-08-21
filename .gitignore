@@ -43,6 +43,9 @@ Thumbs.db
 .pptr/
 .chromium/
 
+.playwright-profile/
+cookie-fetcher/.playwright-profile/
+
 # Optional: app-specific artifacts
 # screenshots/
 
