@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import { chromium } from 'playwright-extra'
+import stealth from 'puppeteer-extra-plugin-stealth'
 
 const USE_PROXY = true
 const proxyHost = 'res.proxy-seller.com'
@@ -8,12 +9,14 @@ const proxyUser = 'b02fa50863fc96e6'
 const proxyPass = 'b8tRlFYa'
 const masterToken = '22942ae7.oauth2v2_1aff91954f5c18240605c743fea64798'
 
+chromium.use(stealth());
+
 async function getOAuth2v2Cookies() {
   let browser
   let context
   try {
     const launchOptions = {
-      headless: false,
+      headless: true,
       args: [
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
