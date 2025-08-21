@@ -25,7 +25,7 @@ async function getOAuth2v2Cookies() {
     }
 
     browser = await chromium.launch(launchOptions)
-    
+
     const contextOptions = {
       ...(USE_PROXY && {
         proxy: {
@@ -64,29 +64,35 @@ async function getOAuth2v2Cookies() {
 
     await page.goto('https://www.upwork.com/ab/account-security/login')
     await page.waitForTimeout(3000)
-    
+
     // Get all cookies and filter those with oauth2v2 values
     try {
       const allCookies = await context.cookies()
-      const oauth2v2Cookies = Array.isArray(allCookies) 
-        ? allCookies.filter(c => c && c.value && c.value.startsWith('oauth2v2'))
-        : []
-      
+      const oauth2v2Cookies = Array.isArray(allCookies)
+          ? allCookies.filter(c => c && c.value && c.value.startsWith('oauth2v2'))
+          : []
+
       console.log('🍪 OAuth2v2 cookies count:', oauth2v2Cookies.length)
       oauth2v2Cookies.forEach(c => {
         try {
-          console.log('🍪 OAuth2v2 cookie:', {
+          const expiresAt = c.expires
+              ? new Date(c.expires * 1000).toString() // convert seconds → ms
+              : "Session (no expiration)";
+
+          console.log("🍪 OAuth2v2 cookie:", {
             name: c.name,
             value: c.value,
             domain: c.domain,
             path: c.path,
             secure: c.secure,
             sameSite: c.sameSite,
-            expires: c.expires,
-          })
+            expires: c.expires,        // original number
+            expiresReadable: expiresAt // human readable
+          });
         } catch {}
-      })
-      
+      });
+
+
       return oauth2v2Cookies
     } catch (e) {
       console.log('🍪 Failed to read cookies:', e?.message)
@@ -101,12 +107,14 @@ async function getOAuth2v2Cookies() {
   }
 }
 
-// Export the function
-export { getOAuth2v2Cookies }
-
-// Run if this file is executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  getOAuth2v2Cookies().catch((e) => {
-    console.error('💥 Script failed:', e?.stack || e)
-  })
+async function playwrightCookies() {
+  try {
+    console.log('🔍 Starting cookie fetch...')
+    const cookies = await getOAuth2v2Cookies()
+    console.log('✅ Found cookies:', cookies)
+  } catch (error) {
+    console.error('❌ Error:', error)
+  }
 }
+
+playwrightCookies()
